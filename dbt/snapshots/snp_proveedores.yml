@@ -1,0 +1,12 @@
+snapshots:
+  - name: snp_proveedores
+    description: >
+      Historia de los datos de cada proveedor (SCD tipo 2). Cada vez que cambia
+      una de las columnas vigiladas, se cierra la versión anterior (dbt_valid_to)
+      y se abre una nueva. La historia empieza el día del primer dbt build.
+    relation: ref('int_proveedores')
+    config:
+      unique_key: codigo_proveedor
+      strategy: check
+      check_cols: [documento_proveedor, tipo_documento_proveedor, nombre_proveedor, es_grupo, es_pyme]
+      table_type: iceberg

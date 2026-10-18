@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: dim_entidad
+    description: Una fila por entidad estatal.
+    columns:
+      - name: codigo_entidad
+        data_tests: [unique, not_null]
+
+  - name: dim_proveedor
+    description: >
+      Una fila por versión de proveedor (SCD tipo 2). es_actual marca la
+      versión vigente.
+    columns:
+      - name: proveedor_version_id
+        data_tests: [unique, not_null]
+      - name: codigo_proveedor
+        data_tests: [not_null]
+      - name: primera_firma
+        description: Primera fecha de firma vista en SECOP II (aproxima la antigüedad del proveedor).
+
+  - name: fct_contrato
+    description: Una fila por contrato, con llaves a dim_entidad y dim_proveedor.
+    columns:
+      - name: id_contrato
+        data_tests: [unique, not_null]
+      - name: codigo_entidad
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_entidad')
+                field: codigo_entidad
+      - name: codigo_proveedor
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_proveedor')
+                field: codigo_proveedor

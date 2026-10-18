@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_contratos
+    description: >
+      Versión vigente de cada contrato (una fila por id_contrato), mantenida
+      con merge incremental en Iceberg.
+    columns:
+      - name: id_contrato
+        data_tests: [unique, not_null]
+      - name: fecha_de_firma
+        data_tests:
+          - no_futura:
+              config: {severity: warn}
+      - name: valor_del_contrato
+        data_tests:
+          - rango:
+              arguments: {min: 0}
+              config: {severity: warn}
+      - name: orden
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Nacional, Territorial, Corporación Autónoma, No Definido]
+              config: {severity: warn}
+
+  - name: int_proveedores
+    description: Datos actuales de cada proveedor (entrada del snapshot SCD2).
+    columns:
+      - name: codigo_proveedor
+        data_tests: [unique, not_null]
+
+unit_tests:
+  - name: int_contratos_gana_la_version_mas_reciente
+    description: >
+      Si un contrato llega varias veces, queda la versión con mayor
+      ultima_actualizacion; sin esa fecha, la de la extracción más reciente.
+    model: int_contratos
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('stg_secop__contratos')
+        rows:
+          - {id_contrato: CO1.A, ultima_actualizacion: "2026-01-01", fecha_carga: "2026-10-18", valor_del_contrato: 100}
+          - {id_contrato: CO1.A, ultima_actualizacion: "2026-03-01", fecha_carga: "2026-10-11", valor_del_contrato: 150}
+          - {id_contrato: CO1.B, ultima_actualizacion: null, fecha_carga: "2026-10-11", valor_del_contrato: 70}
+          - {id_contrato: CO1.B, ultima_actualizacion: null, fecha_carga: "2026-10-18", valor_del_contrato: 80}
+          - {id_contrato: null, ultima_actualizacion: null, fecha_carga: "2026-10-18", valor_del_contrato: 5}
+    expect:
+      rows:
+        - {id_contrato: CO1.A, valor_del_contrato: 150}
+        - {id_contrato: CO1.B, valor_del_contrato: 80}

@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: secop_raw
+    description: Lo que escribe el extractor en S3, tal cual llega de la API (todo texto).
+    tables:
+      - name: contratos
+        description: >
+          Una fila por contrato y por extracción. Un contrato aparece varias veces
+          porque las ventanas diarias se solapan y la recarga semanal vuelve a
+          bajar 2 años. Particionada por fecha_carga.

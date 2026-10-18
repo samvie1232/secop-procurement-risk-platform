@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_secop__contratos
+    description: >
+      Contratos de raw con tipos y nombres estándar. Mismo grano que raw: un
+      contrato aparece una vez por cada extracción que lo trajo.
+    columns:
+      - name: id_contrato
+        description: Llave del contrato en SECOP II (ej. CO1.PCCNTR.6861643).
+      - name: es_contratacion_directa
+        description: Verdadero si la modalidad es alguna forma de contratación directa.
+      - name: nit_entidad
+        description: NIT sin puntos ni dígito de verificación.
+      - name: documento_proveedor
+        description: Documento sin puntos ni dígito de verificación.
+      - name: fecha_carga
+        description: Partición de raw de la que viene la fila.

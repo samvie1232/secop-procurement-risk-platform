@@ -1,0 +1,40 @@
+# Proyecto dbt de SECOP II sobre Athena. Todas las tablas son Iceberg y viven
+# en la base secop_analytics de Glue; los prefijos (stg_, int_, dim_, fct_,
+# risk_) dicen a qué capa pertenece cada modelo.
+name: secop
+version: "1.0.0"
+profile: secop
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+snapshot-paths: ["snapshots"]
+clean-targets: ["target"]
+
+flags:
+  send_anonymous_usage_stats: false
+
+vars:
+  # Primer mes completo en raw (alcance del MVP en docs/data_contract.md).
+  inicio_historia: "2024-10-01"
+  # Indicadores de riesgo: se calculan sobre los últimos 365 días con datos.
+  dias_analisis: 365
+  fraccionamiento_dias: 30          # ventana para contar contratos repetidos
+  fraccionamiento_min_contratos: 3  # desde cuántos contratos en la ventana hay alerta
+  min_contratos_entidad: 30         # menos contratos que esto = muestra muy pequeña para puntuar
+
+models:
+  secop:
+    +table_type: iceberg
+    staging:
+      +materialized: view # no guarda datos: solo limpia y tipa lo que hay en raw
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table
+    risk:
+      +materialized: table
+
+data_tests:
+  secop:
+    +severity: error

@@ -14,6 +14,13 @@ log = logging.getLogger(__name__)
 # El repo está montado en /opt/secop; uv crea el entorno del extractor la primera vez.
 EXTRACTOR = "cd /opt/secop && uv run --frozen --no-dev secop-extract --destino $SECOP_LAGO"
 
+# dbt corre en el mismo entorno, con el grupo de dependencias dbt. El repo está
+# montado de solo lectura, así que lo que dbt escribe (target/ y logs/) va a /tmp.
+DBT = "cd /opt/secop && uv run --frozen --no-dev --group dbt dbt"
+DBT_ARGS = (
+    "--project-dir dbt --profiles-dir dbt --target-path /tmp/dbt/target --log-path /tmp/dbt/logs"
+)
+
 
 def fecha_carga(dag_run) -> str:
     """Día de la corrida en hora de Colombia, para la partición fecha_carga.

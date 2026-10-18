@@ -14,6 +14,10 @@ dependencies = [
 secop-extract = "secop_ingest.cli:main"
 
 [dependency-groups]
+dbt = [
+    "dbt-athena~=1.11.0",
+    "dbt-core~=1.11.0",
+]
 dev = [
     "moto[s3]>=5.1",
     "pytest>=8.4",

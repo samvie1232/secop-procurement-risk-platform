@@ -3,6 +3,10 @@
 Según el contrato de datos: contratos firmados en los últimos 60 días más los
 actualizados en los últimos 7, en la partición fecha_carga del día. Volver a
 correr un día reemplaza sus archivos, así que los reintentos no duplican datos.
+
+Después, dbt build actualiza los modelos (merge por id_contrato en Iceberg) y
+corre sus pruebas: si una prueba falla, los modelos que dependen de ella no se
+construyen y llega el aviso de falla.
 """
 
 from datetime import timedelta
@@ -10,7 +14,15 @@ from datetime import timedelta
 import pendulum
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import dag, task
-from secop_comun import ARGS_POR_DEFECTO, EXTRACTOR, FECHA_CARGA, MACROS, contar_filas
+from secop_comun import (
+    ARGS_POR_DEFECTO,
+    DBT,
+    DBT_ARGS,
+    EXTRACTOR,
+    FECHA_CARGA,
+    MACROS,
+    contar_filas,
+)
 
 
 @dag(
@@ -20,7 +32,7 @@ from secop_comun import ARGS_POR_DEFECTO, EXTRACTOR, FECHA_CARGA, MACROS, contar
     max_active_runs=1,
     default_args=ARGS_POR_DEFECTO,
     user_defined_macros=MACROS,
-    tags=["secop", "ingesta"],
+    tags=["secop", "ingesta", "dbt"],
     doc_md=__doc__,
 )
 def secop_diario():
@@ -38,8 +50,16 @@ def secop_diario():
             raise ValueError(f"La partición fecha_carga={fecha_carga} quedó vacía")
         return filas
 
-    # Aquí se sumarán dbt build y dbt test en el paso 5.
-    extraer >> verificar_en_athena(FECHA_CARGA)
+    # build = run + snapshot + test en orden: cada modelo se prueba apenas se
+    # construye, antes de que lo usen los siguientes. Las pruebas unitarias
+    # validan la lógica del SQL, no los datos: se corren al desarrollar y en CI.
+    dbt_build = BashOperator(
+        task_id="dbt_build",
+        bash_command=f"{DBT} build --exclude-resource-type unit_test {DBT_ARGS}",
+        execution_timeout=timedelta(hours=1),
+    )
+
+    extraer >> verificar_en_athena(FECHA_CARGA) >> dbt_build
 
 
 secop_diario()

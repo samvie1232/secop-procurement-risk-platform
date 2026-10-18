@@ -260,3 +260,8 @@ Thumbs.db
 airflow/.env
 airflow/logs/*
 !airflow/logs/.gitkeep
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/.user.yml

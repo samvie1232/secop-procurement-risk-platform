@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: risk_fraccionamiento
+    description: >
+      Parejas entidad-proveedor con varios contratos directos en pocos días
+      (ventana y mínimo en las vars fraccionamiento_*).
+    data_tests:
+      - unique:
+          arguments:
+            column_name: "codigo_entidad || '|' || codigo_proveedor"
+    columns:
+      - name: max_contratos_ventana
+        data_tests:
+          - rango:
+              arguments:
+                min: "{{ var('fraccionamiento_min_contratos') }}"
+
+  - name: risk_entidad
+    description: >
+      Indicadores por entidad en los últimos dias_analisis días: % de
+      contratación directa, concentración de proveedores (HHI) y proveedores
+      con señal de fraccionamiento, más un puntaje compuesto de 0 a 100
+      (40 % directa, 40 % HHI, 20 % fraccionamiento, en percentiles).
+    columns:
+      - name: codigo_entidad
+        data_tests: [unique, not_null]
+      - name: pct_directa_valor
+        data_tests:
+          - rango:
+              arguments: {min: 0, max: 1}
+      - name: hhi
+        data_tests:
+          - rango:
+              arguments: {min: 0, max: 10000.001}
+      - name: puntaje_riesgo
+        data_tests:
+          - rango:
+              arguments: {min: 0, max: 100}
+
+  - name: risk_proveedor
+    description: >
+      Indicadores por proveedor en los últimos dias_analisis días: proveedor
+      nuevo con contratos grandes, entidades con señal de fraccionamiento y %
+      de contratación directa, más un puntaje compuesto de 0 a 100 (50 %, 30 %
+      y 20 %).
+    columns:
+      - name: codigo_proveedor
+        data_tests: [unique, not_null]
+      - name: puntaje_riesgo
+        data_tests:
+          - rango:
+              arguments: {min: 0, max: 100}
