@@ -1,0 +1,38 @@
+[project]
+name = "secop-procurement-risk-platform"
+version = "0.1.0"
+description = "Ingesta y modelado de SECOP II para detectar señales de riesgo en contratación pública."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "boto3>=1.40",
+    "pyarrow>=21",
+    "requests>=2.32",
+]
+
+[project.scripts]
+secop-extract = "secop_ingest.cli:main"
+
+[dependency-groups]
+dev = [
+    "moto[s3]>=5.1",
+    "pytest>=8.4",
+    "ruff>=0.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/secop_ingest"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
