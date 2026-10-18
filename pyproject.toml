@@ -5,7 +5,7 @@ description = "Ingesta y modelado de SECOP II para detectar señales de riesgo e
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "boto3>=1.40",
+    "boto3[crt]>=1.40",
     "pyarrow>=21",
     "requests>=2.32",
 ]
