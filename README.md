@@ -16,3 +16,11 @@ API SECOP → extractor Python → S3 raw (Parquet) → dbt sobre Athena (stagin
 - Seguro: cero llaves de AWS en el repo; credenciales temporales y OIDC.
 
 Las señales de riesgo sirven para priorizar revisión; no son prueba de irregularidad.
+
+## Orquestación con Airflow
+
+El DAG `secop_diario` corre todos los días a las 7:00 (hora de Colombia) en Airflow 3 local con Docker Compose. Extrae de la API los contratos firmados en los últimos 60 días y los actualizados en los últimos 7, verifica en Athena que la partición del día no quedó vacía y luego corre `dbt build`.
+
+![DAG secop_diario en Airflow: la tarea extraer terminó bien en el segundo intento](docs/img/airflow-secop-diario.png)
+
+La captura muestra por qué la ingesta es idempotente. El primer intento falló y Airflow lo reintentó solo; el segundo bajó los 184.250 contratos de la ventana y, al terminar, borró los 10 archivos que habían dejado corridas anteriores de esa misma ventana y fecha de carga (última línea del log). Repetir una fecha reemplaza sus datos en vez de duplicarlos.
