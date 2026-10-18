@@ -255,3 +255,8 @@ data/
 Thumbs.db
 .vscode/
 .idea/
+
+# Airflow local
+airflow/.env
+airflow/logs/*
+!airflow/logs/.gitkeep
