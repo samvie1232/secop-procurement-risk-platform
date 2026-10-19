@@ -265,3 +265,6 @@ airflow/logs/*
 dbt/target/
 dbt/logs/
 dbt/.user.yml
+
+# El tablero sí lee estos Parquet desde el repo
+!tablero/datos/*.parquet
