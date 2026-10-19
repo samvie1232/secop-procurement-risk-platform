@@ -13,7 +13,7 @@ API SECOP → extractor Python → S3 raw (Parquet) → dbt sobre Athena (stagin
 ## Principios
 - Reproducible: todo se recrea con `terraform apply` y un backfill.
 - Barato: 100 % serverless, presupuesto con alertas y límite de escaneo en Athena.
-- Seguro: cero llaves de AWS en el repo; credenciales temporales y OIDC.
+- Seguro: cero llaves de AWS en el repo; Airflow usa credenciales temporales y el CI una llave de alcance mínimo guardada en los secretos de GitHub.
 
 Las señales de riesgo sirven para priorizar revisión; no son prueba de irregularidad.
 
