@@ -38,6 +38,10 @@ flowchart LR
 | CI | GitHub Actions | Every pull request runs ruff, pytest and a full `dbt build` against Athena on a sample. |
 | Dashboard | Streamlit Community Cloud | Reads small Parquet exports from the repo; no AWS access needed. |
 
+dbt lineage, from the raw table to the risk models ([interactive version](https://samvie1232.github.io/secop-procurement-risk-platform/dbt/)):
+
+![dbt lineage graph](docs/img/dbt-linaje.png)
+
 ## How it works
 
 **Idempotent ingestion.** The source has no reliable change field (`ultima_actualizacion` is empty in 38 % of rows), so the daily run reloads contracts signed in the last 60 days plus those updated in the last 7, and a weekly job reloads the full two years. Each run writes its files first and only then deletes files that earlier runs left for the same window and load date. Re-running a day replaces its data instead of duplicating it.

@@ -38,6 +38,10 @@ flowchart LR
 | CI | GitHub Actions | Cada pull request corre ruff, pytest y un `dbt build` completo contra Athena sobre una muestra. |
 | Tablero | Streamlit Community Cloud | Lee Parquet pequeños guardados en el repo; no necesita acceso a AWS. |
 
+Linaje de dbt, de la tabla raw a los modelos de riesgo ([versión interactiva](https://samvie1232.github.io/secop-procurement-risk-platform/dbt/)):
+
+![Grafo de linaje de dbt](docs/img/dbt-linaje.png)
+
 ## Cómo funciona
 
 **Ingesta idempotente.** La fuente no tiene un campo confiable de cambios (`ultima_actualizacion` está vacía en el 38 % de las filas), así que la carga diaria trae los contratos firmados en los últimos 60 días más los actualizados en los últimos 7, y una carga semanal recarga los dos años completos. Cada corrida escribe primero sus archivos y solo después borra los que dejaron corridas anteriores de la misma ventana y fecha de carga. Repetir un día reemplaza sus datos en vez de duplicarlos.
