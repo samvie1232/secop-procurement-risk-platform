@@ -25,6 +25,14 @@ El DAG `secop_diario` corre todos los días a las 7:00 (hora de Colombia) en Air
 
 La captura muestra por qué la ingesta es idempotente. El primer intento falló y Airflow lo reintentó solo; el segundo bajó los 184.250 contratos de la ventana y, al terminar, borró los 10 archivos que habían dejado corridas anteriores de esa misma ventana y fecha de carga (última línea del log). Repetir una fecha reemplaza sus datos en vez de duplicarlos.
 
+## Tablero
+
+En vivo: https://secop-riesgo-contratacion.streamlit.app
+
+![Tablero de señales de riesgo](docs/img/tablero.png)
+
+Streamlit Community Cloud lee archivos Parquet guardados en `tablero/datos/`, sin conectarse a AWS. Esos archivos se generan con `tablero/exportar.py` a partir de los marts de riesgo en Athena. Para actualizarlo hay que correr el exportador y abrir un PR. Al unirlo a main, Streamlit vuelve a desplegar solo.
+
 ## CI en cada pull request
 
 `main` está protegida: solo acepta cambios por pull request y con los dos checks de GitHub Actions en verde.
