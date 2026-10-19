@@ -1,0 +1,65 @@
+# CI de cada pull request (y de main después de unir):
+#   python: estilo con ruff y pruebas con pytest, sin tocar AWS.
+#   dbt:    dbt build completo (modelos, snapshot, pruebas de datos y
+#           unitarias) contra Athena, sobre una muestra y en la base secop_ci,
+#           con la llave del usuario secop-risk-github-ci (secretos del repo).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Instalar dependencias
+        run: uv sync --frozen
+      - name: Lint (ruff)
+        run: uv run --frozen ruff check .
+      - name: Formato (ruff)
+        run: uv run --frozen ruff format --check .
+      - name: Pruebas (pytest)
+        run: uv run --frozen pytest
+
+  dbt:
+    runs-on: ubuntu-latest
+    # Los pull requests desde forks no reciben los secretos: ahí se salta.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # Una ejecución a la vez: todas escriben en la misma base secop_ci.
+    concurrency:
+      group: dbt-ci
+      cancel-in-progress: false
+    env:
+      AWS_REGION: us-east-2
+      LAGO: s3://secop-risk-lake-716528269015
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Credenciales de AWS (usuario solo para el CI)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Elegir la muestra (última fecha_carga en raw)
+        run: |
+          fecha=$(aws s3 ls "$LAGO/raw/contratos/" | awk -F'[=/]' '/fecha_carga=/ {print $2}' | sort | tail -n 1)
+          test -n "$fecha" || { echo "No hay particiones en raw/contratos"; exit 1; }
+          echo "Muestra: fecha_carga=$fecha"
+          echo "MUESTRA=$fecha" >> "$GITHUB_ENV"
+      - name: dbt build sobre la muestra
+        run: >
+          uv run --frozen --no-dev --group dbt dbt build
+          --project-dir dbt --profiles-dir dbt --target ci --full-refresh
+          --vars "{muestra_fecha_carga: '$MUESTRA'}"

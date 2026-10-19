@@ -19,9 +19,7 @@ class DestinoLocal:
         base = self.raiz / carpeta
         if not base.exists():
             return []
-        return sorted(
-            f"{carpeta}/{p.name}" for p in base.iterdir() if p.name.startswith(inicio)
-        )
+        return sorted(f"{carpeta}/{p.name}" for p in base.iterdir() if p.name.startswith(inicio))
 
     def borrar(self, llaves: list[str]) -> None:
         for llave in llaves:
