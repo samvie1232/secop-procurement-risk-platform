@@ -57,7 +57,13 @@ select
     {{ a_booleano('el_contrato_puede_ser_prorrogado') }} as puede_ser_prorrogado,
 
     -- Valores en pesos
-    {{ a_valor('valor_del_contrato') }} as valor_del_contrato,
+    -- Valores imposibles (errores de digitación en SECOP) quedan en null para
+    -- que no entren a sumas ni indicadores; el valor reportado se conserva.
+    if({{ a_valor('valor_del_contrato') }} <= {{ var('valor_maximo_plausible') }},
+       {{ a_valor('valor_del_contrato') }}) as valor_del_contrato,
+    {{ a_valor('valor_del_contrato') }} as valor_del_contrato_reportado,
+    coalesce({{ a_valor('valor_del_contrato') }} > {{ var('valor_maximo_plausible') }}, false)
+        as valor_atipico,
     {{ a_valor('valor_de_pago_adelantado') }} as valor_de_pago_adelantado,
     {{ a_valor('valor_facturado') }} as valor_facturado,
     {{ a_valor('valor_pagado') }} as valor_pagado,

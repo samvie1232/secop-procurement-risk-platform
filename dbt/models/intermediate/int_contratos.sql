@@ -83,6 +83,8 @@ select
     dias_adicionados,
     puede_ser_prorrogado,
     valor_del_contrato,
+    valor_del_contrato_reportado,
+    valor_atipico,
     valor_de_pago_adelantado,
     valor_facturado,
     valor_pagado,
