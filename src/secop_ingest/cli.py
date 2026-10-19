@@ -18,17 +18,27 @@ from secop_ingest.socrata import ClienteSocrata
 
 
 def main(argv: list[str] | None = None) -> None:
-    p = argparse.ArgumentParser(prog="secop-extract", description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        prog="secop-extract",
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     p.add_argument("--destino", required=True, help="s3://bucket/prefijo o una carpeta local")
     p.add_argument("--desde", type=date.fromisoformat, help="primera fecha de firma (AAAA-MM-DD)")
     p.add_argument("--hasta", type=date.fromisoformat, help="última fecha de firma, incluida")
     p.add_argument("--dias", type=int, help="atajo: firmados en los últimos N días hasta hoy")
-    p.add_argument("--actualizados-dias", type=int,
-                   help="suma los contratos con ultima_actualizacion en los últimos N días")
+    p.add_argument(
+        "--actualizados-dias",
+        type=int,
+        help="suma los contratos con ultima_actualizacion en los últimos N días",
+    )
     p.add_argument("--por-mes", action="store_true", help="parte el rango en ventanas mensuales")
-    p.add_argument("--fecha-carga", type=date.fromisoformat, default=date.today(),
-                   help="partición fecha_carga (por defecto, hoy)")
+    p.add_argument(
+        "--fecha-carga",
+        type=date.fromisoformat,
+        default=date.today(),
+        help="partición fecha_carga (por defecto, hoy)",
+    )
     a = p.parse_args(argv)
 
     if a.dias:

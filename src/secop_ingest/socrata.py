@@ -48,13 +48,15 @@ class ClienteSocrata:
         da un orden estable, así ninguna fila se repite ni se salta entre páginas."""
         offset = 0
         while True:
-            pagina = self._get({
-                "$select": ",".join(COLUMNAS),
-                "$where": where,
-                "$order": ":id",
-                "$limit": tam_pagina,
-                "$offset": offset,
-            })
+            pagina = self._get(
+                {
+                    "$select": ",".join(COLUMNAS),
+                    "$where": where,
+                    "$order": ":id",
+                    "$limit": tam_pagina,
+                    "$offset": offset,
+                }
+            )
             if not pagina:
                 return
             log.info("página offset=%s: %s filas", offset, len(pagina))

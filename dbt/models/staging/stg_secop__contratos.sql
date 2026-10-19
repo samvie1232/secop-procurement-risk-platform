@@ -4,6 +4,12 @@
 with fuente as (
 
     select * from {{ source('secop_raw', 'contratos') }}
+    {%- if var('muestra_fecha_carga', none) %}
+    -- Muestra para el CI: una sola partición de raw y solo los contratos
+    -- firmados en sus últimos 30 días. Fuera del CI la var no existe.
+    where fecha_carga = date '{{ var("muestra_fecha_carga") }}'
+      and {{ a_fecha('fecha_de_firma') }} >= date '{{ var("muestra_fecha_carga") }}' - interval '30' day
+    {%- endif %}
 
 )
 

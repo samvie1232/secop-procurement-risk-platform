@@ -14,3 +14,16 @@ secop:
       s3_data_naming: schema_table_unique
       threads: 4
       num_retries: 2
+    # CI de GitHub Actions: mismas tablas, en una base aparte (secop_ci) y
+    # sobre una muestra (ver la var muestra_fecha_carga en staging).
+    ci:
+      type: athena
+      region_name: us-east-2
+      database: awsdatacatalog
+      schema: secop_ci
+      work_group: secop
+      s3_staging_dir: s3://secop-risk-athena-results-716528269015/
+      s3_data_dir: s3://secop-risk-lake-716528269015/dbt/
+      s3_data_naming: schema_table_unique
+      threads: 4
+      num_retries: 2

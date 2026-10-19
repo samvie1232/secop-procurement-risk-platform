@@ -32,17 +32,21 @@ class ClienteFalso:
 
 def filas(n):
     return [
-        {"id_contrato": f"CO1.PCCNTR.{i}", "valor_del_contrato": str(i * 1000),
-         "urlproceso": {"url": f"https://community.secop.gov.co/{i}"},
-         "nombre_representante_legal": "no debe guardarse"}
+        {
+            "id_contrato": f"CO1.PCCNTR.{i}",
+            "valor_del_contrato": str(i * 1000),
+            "urlproceso": {"url": f"https://community.secop.gov.co/{i}"},
+            "nombre_representante_legal": "no debe guardarse",
+        }
         for i in range(n)
     ]
 
 
 def test_where_incluye_el_ultimo_dia():
     w = construir_where(date(2026, 8, 1), date(2026, 8, 31))
-    assert w == ("fecha_de_firma >= '2026-08-01T00:00:00' "
-                 "AND fecha_de_firma < '2026-09-01T00:00:00'")
+    assert w == (
+        "fecha_de_firma >= '2026-08-01T00:00:00' AND fecha_de_firma < '2026-09-01T00:00:00'"
+    )
 
 
 def test_where_con_actualizados():
@@ -122,5 +126,7 @@ def test_escribe_y_reemplaza_en_s3():
 
     llaves = [o["Key"] for o in s3.list_objects_v2(Bucket="lago")["Contents"]]
     assert len(llaves) == 2
-    assert all(k.startswith("raw/contratos/fecha_carga=2026-10-18/firma_2026-08-01_2026-08-31__b__")
-               for k in llaves)
+    assert all(
+        k.startswith("raw/contratos/fecha_carga=2026-10-18/firma_2026-08-01_2026-08-31__b__")
+        for k in llaves
+    )
