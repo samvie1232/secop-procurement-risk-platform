@@ -18,6 +18,7 @@ select
     ultima_actualizacion,
     dias_adicionados,
     valor_del_contrato,
+    valor_atipico,
     valor_pagado,
     valor_facturado,
     valor_pendiente_de_ejecucion,

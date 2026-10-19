@@ -17,6 +17,12 @@ models:
           - rango:
               arguments: {min: 0}
               config: {severity: warn}
+      - name: valor_atipico
+        description: >
+          Verdadero si el valor reportado supera var('valor_maximo_plausible'); en ese
+          caso valor_del_contrato queda en null y el original está en
+          valor_del_contrato_reportado.
+        data_tests: [not_null]
       - name: orden
         data_tests:
           - accepted_values:
