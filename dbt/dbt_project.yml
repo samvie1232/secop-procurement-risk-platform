@@ -22,6 +22,9 @@ vars:
   fraccionamiento_dias: 30          # ventana para contar contratos repetidos
   fraccionamiento_min_contratos: 3  # desde cuántos contratos en la ventana hay alerta
   min_contratos_entidad: 30         # menos contratos que esto = muestra muy pequeña para puntuar
+  # Señal de texto: los contratos directos de entidades con este puntaje o más
+  # entran a la lectura con Claude (además de fraccionamiento y proveedores nuevos).
+  texto_puntaje_entidad_min: 90
   # Ningún contrato puede valer más que esto (100 billones de pesos, una quinta
   # parte del presupuesto nacional): por encima es un error de digitación.
   valor_maximo_plausible: 100000000000000

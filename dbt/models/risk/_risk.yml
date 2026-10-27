@@ -51,3 +51,35 @@ models:
         data_tests:
           - rango:
               arguments: {min: 0, max: 100}
+
+  - name: risk_contrato_candidato
+    description: >
+      Contratos del periodo de análisis que ya marca al menos uno de los otros
+      indicadores (fraccionamiento, proveedor nuevo con contratos grandes o
+      contrato directo de una entidad con puntaje alto). Son los únicos que
+      lee la señal de texto; prioridad = cuántos motivos tiene.
+    columns:
+      - name: id_contrato
+        data_tests: [unique, not_null]
+      - name: prioridad
+        data_tests:
+          - rango:
+              arguments: {min: 1, max: 3}
+
+  - name: risk_senal_texto
+    description: >
+      Quinto indicador: lectura del objeto, la descripción y la justificación
+      del contrato con Claude (Amazon Bedrock). Una fila por contrato leído.
+      bandera = nivel medio o alto con una cita que está en el contrato. Es
+      una señal de riesgo para revisión humana, no prueba de irregularidad.
+    columns:
+      - name: id_contrato
+        data_tests: [unique, not_null]
+      - name: nivel
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [ninguno, bajo, medio, alto]
+      - name: bandera
+        data_tests: [not_null]

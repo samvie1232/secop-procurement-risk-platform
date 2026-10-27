@@ -63,6 +63,20 @@ fraccionamiento as (
 
 ),
 
+senal_texto as (
+
+    -- Quinto indicador (lectura del texto con Claude). Solo informa: no entra
+    -- al puntaje hasta medir su precisión contra etiquetas hechas a mano.
+    select
+        c.codigo_proveedor,
+        count(*) as contratos_leidos_texto,
+        count_if(s.bandera) as contratos_con_senal_texto
+    from {{ ref('risk_senal_texto') }} as s
+    inner join contratos as c on s.id_contrato = c.id_contrato
+    group by c.codigo_proveedor
+
+),
+
 indicadores as (
 
     select
@@ -72,10 +86,13 @@ indicadores as (
         -- "Nuevo" solo si apareció 6 meses después del inicio de la historia
         -- cargada; antes no se puede saber si ya existía.
         p.primera_firma >= date '{{ var("inicio_historia") }}' + interval '180' day as es_nuevo,
-        coalesce(f.entidades_con_fraccionamiento, 0) as entidades_con_fraccionamiento
+        coalesce(f.entidades_con_fraccionamiento, 0) as entidades_con_fraccionamiento,
+        coalesce(t.contratos_leidos_texto, 0) as contratos_leidos_texto,
+        coalesce(t.contratos_con_senal_texto, 0) as contratos_con_senal_texto
     from por_proveedor as x
     inner join proveedores as p on x.codigo_proveedor = p.codigo_proveedor
     left join fraccionamiento as f on x.codigo_proveedor = f.codigo_proveedor
+    left join senal_texto as t on x.codigo_proveedor = t.codigo_proveedor
 
 )
 

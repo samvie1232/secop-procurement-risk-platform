@@ -67,6 +67,20 @@ fraccionamiento as (
 
 ),
 
+senal_texto as (
+
+    -- Quinto indicador (lectura del texto con Claude). Solo informa: no entra
+    -- al puntaje hasta medir su precisión contra etiquetas hechas a mano.
+    select
+        c.codigo_entidad,
+        count(*) as contratos_leidos_texto,
+        count_if(s.bandera) as contratos_con_senal_texto
+    from {{ ref('risk_senal_texto') }} as s
+    inner join contratos as c on s.id_contrato = c.id_contrato
+    group by c.codigo_entidad
+
+),
+
 indicadores as (
 
     select
@@ -78,10 +92,13 @@ indicadores as (
         c.proveedores,
         c.hhi,
         coalesce(f.proveedores_con_fraccionamiento, 0) as proveedores_con_fraccionamiento,
+        coalesce(t.contratos_leidos_texto, 0) as contratos_leidos_texto,
+        coalesce(t.contratos_con_senal_texto, 0) as contratos_con_senal_texto,
         e.contratos >= {{ var('min_contratos_entidad') }} as muestra_suficiente
     from por_entidad as e
     left join concentracion as c on e.codigo_entidad = c.codigo_entidad
     left join fraccionamiento as f on e.codigo_entidad = f.codigo_entidad
+    left join senal_texto as t on e.codigo_entidad = t.codigo_entidad
 
 )
 

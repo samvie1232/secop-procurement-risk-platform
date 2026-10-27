@@ -176,6 +176,14 @@ data "aws_iam_policy_document" "pipeline" {
       "arn:aws:glue:${var.region}:${local.account_id}:table/secop_*/*",
     ]
   }
+
+  # Señal de texto: llamar a Claude en Amazon Bedrock (endpoint bedrock-mantle).
+  # El acceso a cada modelo se habilita aparte, en la consola de Bedrock.
+  statement {
+    sid       = "LeerTextoConClaude"
+    actions   = ["bedrock-mantle:CreateInference"]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "pipeline" {
