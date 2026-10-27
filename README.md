@@ -9,6 +9,7 @@ A daily data platform on AWS that ingests Colombia's public procurement contract
 - **Live dashboard:** https://secop-riesgo-contratacion.streamlit.app
 - **dbt docs and lineage:** https://samvie1232.github.io/secop-procurement-risk-platform/dbt/
 - **Manual review of 5 alerts:** [docs/validacion_alertas.md](docs/validacion_alertas.md)
+- **Text signal with Claude (under evaluation):** [docs/senal_texto.md](docs/senal_texto.md)
 
 > Risk signals are a way to prioritize review. They are not evidence of wrongdoing.
 
@@ -62,6 +63,7 @@ Computed over the last 365 days of data (2025-10-17 to 2026-10-17 in the current
 | Supplier concentration (HHI) | Entity | Herfindahl-Hirschman index of contract value by supplier: 10,000 means one supplier gets everything. |
 | Contract splitting | Entity-supplier | 3 or more direct contracts between the same pair within 30 days. |
 | New supplier with large contracts | Supplier | Contracts in the top 5 % by value during the supplier's first 90 days in SECOP II. |
+| Text signal (under evaluation) | Contract | Claude (Amazon Bedrock) reads the purpose, description and justification of contracts already flagged by the indicators above and returns a level, the signal type and a verified verbatim quote. Not part of the score yet. Details (Spanish): [docs/senal_texto.md](docs/senal_texto.md). |
 | Composite score (0-100) | Entity and supplier | Weighted percentiles: entity 40 % direct award, 40 % HHI, 20 % splitting; supplier 50 % new with large contracts, 30 % splitting, 20 % direct award. Entities with fewer than 30 contracts are not scored. |
 
 **Results in the current export**

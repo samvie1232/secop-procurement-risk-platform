@@ -9,3 +9,8 @@ sources:
           Una fila por contrato y por extracción. Un contrato aparece varias veces
           porque las ventanas diarias se solapan y la recarga semanal vuelve a
           bajar 2 años. Particionada por fecha_carga.
+      - name: senales_texto
+        description: >
+          Lo que escribe `secop-texto leer`: una fila por contrato leído con
+          Claude y por corrida (append). Particionada por fecha_carga. Si la
+          tabla aún no existe en Glue, stg_secop__senales_texto queda vacía.

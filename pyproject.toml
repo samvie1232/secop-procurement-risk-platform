@@ -5,6 +5,7 @@ description = "Ingesta y modelado de SECOP II para detectar señales de riesgo e
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
+    "anthropic[bedrock]>=2.3",
     "boto3[crt]>=1.40",
     "pyarrow>=21",
     "requests>=2.32",
@@ -12,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 secop-extract = "secop_ingest.cli:main"
+secop-texto = "secop_texto.cli:main"
 
 [dependency-groups]
 dbt = [
@@ -29,7 +31,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/secop_ingest"]
+packages = ["src/secop_ingest", "src/secop_texto"]
 
 [tool.ruff]
 line-length = 100

@@ -16,3 +16,14 @@ models:
         description: Documento sin puntos ni dígito de verificación.
       - name: fecha_carga
         description: Partición de raw de la que viene la fila.
+
+  - name: stg_secop__senales_texto
+    description: >
+      Lecturas de la señal de texto (Claude en Amazon Bedrock) sobre los
+      contratos candidatos. Una fila por contrato y por corrida.
+    columns:
+      - name: nivel
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [ninguno, bajo, medio, alto]

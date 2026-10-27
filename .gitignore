@@ -268,3 +268,6 @@ dbt/.user.yml
 
 # El tablero sí lee estos Parquet desde el repo
 !tablero/datos/*.parquet
+
+# Lecturas de la señal de texto y etiquetas a mano (traen texto de contratos)
+revision/

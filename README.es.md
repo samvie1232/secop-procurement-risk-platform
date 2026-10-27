@@ -9,6 +9,7 @@ Plataforma de datos en AWS que ingiere a diario los contratos públicos de Colom
 - **Tablero en vivo:** https://secop-riesgo-contratacion.streamlit.app
 - **Documentación y linaje de dbt:** https://samvie1232.github.io/secop-procurement-risk-platform/dbt/
 - **Revisión manual de 5 alertas:** [docs/validacion_alertas.md](docs/validacion_alertas.md)
+- **Señal de texto con Claude (en evaluación):** [docs/senal_texto.md](docs/senal_texto.md)
 
 > Las señales de riesgo sirven para priorizar revisión. No son prueba de irregularidad.
 
@@ -62,6 +63,7 @@ Se calculan sobre los últimos 365 días con datos (del 2025-10-17 al 2026-10-17
 | Concentración de proveedores (HHI) | Entidad | Índice Herfindahl-Hirschman del valor por proveedor: 10.000 significa que un solo proveedor se lleva todo. |
 | Fraccionamiento | Entidad-proveedor | 3 o más contratos directos de la misma pareja en 30 días. |
 | Proveedor nuevo con contratos grandes | Proveedor | Contratos dentro del 5 % de mayor valor en sus primeros 90 días en SECOP II. |
+| Señal de texto (en evaluación) | Contrato | Claude (Amazon Bedrock) lee el objeto, la descripción y la justificación de los contratos que ya marcan los indicadores anteriores y devuelve nivel, tipo de señal y una cita textual verificada. Todavía no entra al puntaje. Detalle: [docs/senal_texto.md](docs/senal_texto.md). |
 | Puntaje compuesto (0-100) | Entidad y proveedor | Percentiles ponderados: entidad 40 % directa, 40 % HHI, 20 % fraccionamiento; proveedor 50 % nuevo con contratos grandes, 30 % fraccionamiento, 20 % directa. Las entidades con menos de 30 contratos no se puntúan. |
 
 **Resultados de la exportación actual**
